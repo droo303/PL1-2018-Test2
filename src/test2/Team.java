@@ -12,6 +12,17 @@ package test2;
 public class Team implements Comparable<Team> {
 
     private String name;
+    private Conference conference;
+    private Division division;
+    private int score;
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
 
     public String getName() {
         return name;
@@ -21,9 +32,29 @@ public class Team implements Comparable<Team> {
         this.name = name;
     }
 
+    public Conference getConference() {
+        return conference;
+    }
+
+    public void setConference(Conference conference) {
+        this.conference = conference;
+    }
+
+    public Division getDivision() {
+        return division;
+    }
+
+    public void setDivision(Division division) {
+        this.division = division;
+    }
+
     @Override
     public String toString() {
-        return this.name;
+        return this.name + ((score!=0)?" - "+score:"");
+    }
+
+    public String toFullString() {
+        return String.format("%1$30s", this.name) + "\t" + score + "\t" + conference + "\t" + division;
     }
 
     @Override
