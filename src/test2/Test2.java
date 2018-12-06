@@ -5,6 +5,9 @@
  */
 package test2;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  *
  * @author beh01
@@ -16,6 +19,14 @@ public class Test2 {
      */
     public static void main(String[] args) {
         League league = League.loadData();
-        league.printResult();
+        List<Streak> s = league.computeStreaks();
+        Collections.sort(s);
+        int longestStreak = s.get(s.size() - 1).getLength();
+        for (Streak streak : s) {
+            if (streak.getLength() == longestStreak) {
+                System.out.println(streak);
+            }
+        }
+
     }
 }

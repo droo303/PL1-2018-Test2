@@ -11,8 +11,8 @@ package test2;
  */
 public class Result {
 
-    private Team team;
-    private int score;
+    private final Team team;
+    private final int score;
 
     public Result(Team team, int score) {
         this.team = team;

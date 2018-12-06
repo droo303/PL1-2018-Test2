@@ -47,15 +47,31 @@ public class League {
         return teams;
     }
 
-    public void printResult() {
-        System.out.printf("NHL Teams (%d):\n", teams.size());
-        for (Team t : teams) {
-            System.out.println(t);
-        }
-        System.out.println("Results:");
+    public List<Streak> computeStreaks() {
         for (Game game : games) {
-            System.out.println(game);
+            Team winner = null;
+            Team loser = null;
+            if (game.getHomeTeam().getScore() > game.getVisitors().getScore()) {
+                winner = game.getHomeTeam().getTeam();
+                loser = game.getVisitors().getTeam();
+            } else if (game.getHomeTeam().getScore() < game.getVisitors().getScore()) {
+                winner = game.getVisitors().getTeam();
+                loser = game.getHomeTeam().getTeam();
+            } else {
+                throw new RuntimeException("Error in data");
+            }
+            winner.AddToStreak(ResultType.W, loser);
+            if (game.getNote() != null) {
+                loser.AddToStreak(ResultType.OT, winner);
+            }else {
+                loser.AddToStreak(ResultType.L, winner);
+            }
         }
+        List<Streak> result = new ArrayList<>();
+        for(Team team : teams) {
+            result.addAll(team.getStreaks());
+        }
+        return result;
     }
 
     private static Result readResult(League league, Scanner s) {
@@ -98,8 +114,22 @@ public class League {
                 }
                 nextString = nextString.replace(",", "");
                 int numberOfvisitors = Integer.parseInt(nextString);
-                LocalTime l = LocalTime.parse(s.next(),timeFormat);
+                LocalTime l = LocalTime.parse(s.next(), timeFormat);
                 league.getGames().add(new Game(date, home, visit, numberOfvisitors, l, note));
+            }
+            input = new Scanner(new File("league.txt"));
+            for (int i = 0; i < 2; i++) {
+                Conference conference = Conference.valueOf(input.nextLine().trim());
+                for (int j = 0; j < 2; j++) {
+                    Division division = Division.valueOf(input.nextLine().trim());
+                    String team = (input.hasNextLine()) ? input.nextLine().trim() : "";
+                    while (!team.equals("")) {
+                        Team t = league.lookForTema(team);
+                        t.setConference(conference);
+                        t.setDivision(division);
+                        team = (input.hasNextLine()) ? input.nextLine().trim() : "";
+                    }
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
