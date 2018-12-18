@@ -24,6 +24,7 @@ import java.util.LinkedList;
     public class Test2 {
 
     private static Map<String, List<String>> divisions = new LinkedHashMap<>();
+    private static Map<String, Integer> score = new LinkedHashMap<>();
     /**
      * @param args the command line arguments
      */
@@ -31,11 +32,25 @@ import java.util.LinkedList;
         League league = League.loadData();
        // league.printResult();
 
-
+       
        for (Game game : league.getGames()){
-           
+           Result first = null, second = null;
+           Integer winner = 2,loser = 0;
+           if (game.getHomeTeam().getScore() >= game.getVisitors().getScore()){
+               first = game.getHomeTeam();
+               second = game.getVisitors();
+           } else if (game.getHomeTeam().getScore() < game.getVisitors().getScore()){
+               first = game.getVisitors();
+               second = game.getHomeTeam();
+           }
+           if (game.getNote() == Note.OVERTIME_VICTORY || game.getNote() == Note.SHOOTOUT){
+               loser++;
+           }
+           addScore(first.getTeam().getName(),winner);
+           addScore(second.getTeam().getName(),loser);
        }
-   
+ 
+  
 
 
         try{
@@ -56,16 +71,37 @@ import java.util.LinkedList;
             }
             
         }
-        for (Map.Entry<String,List<String>> set : divisions.entrySet()){
+       /* for (Map.Entry<String,List<String>> set : divisions.entrySet()){
           System.out.println(set.getKey());
           System.out.println(set.getValue()); 
         }
+        */
+      List<TeamScore> teams = new LinkedList<>();
+      
+      for (Map.Entry<String,List<String>> set : divisions.entrySet()){
+          for (String s : set.getValue()){
+              teams.add(new TeamScore(s,0,set.getKey()));
+          }
+      }
+      
+      for (Map.Entry<String,Integer> sc : score.entrySet()){
+          for (TeamScore team : teams){
+              if (team.team.equals(sc.getKey())){
+                  team.score = sc.getValue();
+              }
+          }
+      }
+      
+      for (TeamScore t : teams){
+        System.out.println(t.team +" "+ t.score);  
+      }
       
     }
     catch (FileNotFoundException e){
         } catch (IOException ex) {
             Logger.getLogger(Test2.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
     }
     
         public static void addDivisionTeam(String division, String data){
@@ -75,9 +111,22 @@ import java.util.LinkedList;
             divisions.get(division).add(data);
         }
         
-        public static void TeamGame(){
+        public static void addScore(String team,Integer add){
+            if (!score.containsKey(team)){
+                score.put(team, add);
+            } else {
+                score.replace(team, score.get(team)+add);
+            }
+        }
+        
+        public static class TeamScore{
             String team;
             Integer score;
             String division;
+           TeamScore(String team,Integer score,String division){
+               this.team = team;
+               this.score = score;
+               this.division = division;
+           }
         }
     }
