@@ -92,10 +92,24 @@ import java.util.LinkedList;
           }
       }
       
-      for (TeamScore t : teams){
-        System.out.println(t.team +" "+ t.score);  
+      for (String s : divisions.keySet()) {
+       
+            List<TeamScore> divList = new LinkedList<>();
+          
+            for (TeamScore team : teams) {
+                
+                if (team.division.equals(s)) {
+                    divList.add(team);
+                }
+            }
+            divList.sort((o1, o2) -> {
+                return Integer.compare(o1.score, o2.score);
+            });
+            System.out.println("Division: " + s); 
+            for (int i = 0; i < 3; i++) {
+                System.out.println("\t" + divList.get(i).team + " - " + divList.get(i).score);
+            }
       }
-      
     }
     catch (FileNotFoundException e){
         } catch (IOException ex) {
